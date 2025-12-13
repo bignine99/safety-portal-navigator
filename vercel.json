@@ -1,5 +1,8 @@
 {
   "version": 2,
   "builds": [{ "src": "index.html", "use": "@vercel/static" }],
-  "routes": [{ "src": "/(.*)", "dest": "/index.html" }]
+  "routes": [
+    { "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|txt|zip|html))", "dest": "/$1" },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
 }
