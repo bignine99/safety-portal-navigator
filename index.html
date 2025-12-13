@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>안전정보 검색 포털</title>
+    <!-- Tailwind CSS 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter 폰트 로드 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- [중요] 데이터베이스 JS 파일 로드 -->
+    <!-- 이 파일과 risk_database.js가 같은 폴더에 있어야 합니다. -->
+    <script src="risk_database.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f4f7f6; /* 차분한 배경색 */
+        }
+        /* 항목 카드 호버 효과 */
+        .risk-card {
+            transition: all 0.2s ease-in-out;
+            border: 1px solid #e5e7eb;
+        }
+        .risk-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #9ca3af;
+        }
+        /* 버튼 공통 스타일 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding-left: 1rem;
+            padding-right: 1rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            font-size: 0.875rem; /* text-sm */
+            line-height: 1.25rem; /* text-sm */
+            font-weight: 500; /* font-medium */
+            border-width: 1px;
+            border-color: transparent;
+            border-radius: 0.375rem; /* rounded-md */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+            color: white;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        .btn-card {
+            background-color: #2563eb; /* blue-600 */
+        }
+        .btn-card:hover {
+            background-color: #1d4ed8; /* blue-700 */
+        }
+        .btn-checklist {
+            background-color: #4b5563; /* gray-600 */
+        }
+        .btn-checklist:hover {
+            background-color: #374151; /* gray-700 */
+        }
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8">
+
+    <div class="container mx-auto max-w-6xl">
+        <!-- 헤더 및 검색창 -->
+        <header class="mb-8 p-6 bg-white rounded-xl shadow-lg border border-gray-200">
+            <div class="flex items-center justify-between mb-4">
+                
+                <!-- 좌측: 제목 및 부제 -->
+                <div class="flex items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-600 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div class="text-left">
+                        <h1 class="text-4xl font-bold text-gray-800">
+                            안전관제 BIM Navigator
+                        </h1>
+                        <p class="text-base text-gray-600">위험정보 라이브러리 시스템: 철근콘크리트 편</p>
+                    </div>
+                </div>
+
+                <!-- 우측: 로고 이미지 -->
+                <div class="flex-shrink-0 ml-4">
+                    <img src="https://i.postimg.cc/RCPjM9dJ/NNLogo20250630.png" 
+                         alt="나인티나인 로고" 
+                         class="h-12 w-auto onerror='this.onerror=null;this.src=\"https://placehold.co/100x50/CCCCCC/333333?text=Logo\";'">
+                </div>
+            </div>
+            
+            <!-- 검색 입력창 -->
+            <div class="relative mt-4">
+                <input type="text" id="searchInput" 
+                       class="w-full p-4 pl-12 text-lg border-2 border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+                       placeholder="[A-01], [덤프트럭], [추락] 등 키워드 검색...">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+        </header>
+
+        <!-- 검색 결과 -->
+        <main id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- JavaScript에 의해 동적으로 채워집니다 -->
+        </main>
+
+        <!-- 검색 결과 없음 메시지 -->
+        <div id="noResults" class="hidden text-center p-10 bg-white rounded-lg shadow-md">
+            <p class="text-xl font-medium text-gray-700">검색 결과가 없습니다.</p>
+            <p class="text-gray-500 mt-2">다른 키워드로 검색해 보세요.</p>
+        </div>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const noResults = document.getElementById('noResults');
+        
+        // 페이지 로드 시 전체 DB 표시 (risk_database.js 로드 확인)
+        window.onload = () => {
+            if (typeof RISK_DB !== 'undefined') {
+                displayResults(RISK_DB);
+            } else {
+                // DB 로드 실패 메시지 (이 메시지가 보이면 risk_database.js 파일을 확인하세요)
+                resultsContainer.innerHTML = '<div class="col-span-full text-center p-10 bg-white rounded-xl shadow-md text-red-600 font-bold">오류: risk_database.js 파일을 찾을 수 없습니다. 두 파일을 같은 폴더에 저장했는지 확인해 주세요.</div>';
+            }
+        };
+
+
+        // 검색창 입력 이벤트 리스너
+        searchInput.addEventListener('input', (e) => {
+            if (typeof RISK_DB === 'undefined') return; 
+
+            const query = e.target.value.toLowerCase().trim();
+            
+            if (query === "") {
+                displayResults(RISK_DB);
+                return;
+            }
+            
+            // 데이터베이스 필터링
+            const filteredDB = RISK_DB.filter(item => {
+                // 1. 제목(A-01. 덤프트럭) 검사
+                if (item.title.toLowerCase().includes(query)) {
+                    return true;
+                }
+                // 2. 키워드 배열 검사
+                return item.keywords.some(keyword => keyword.toLowerCase().includes(query));
+            });
+            
+            displayResults(filteredDB);
+        });
+
+        /**
+         * 검색 결과를 화면에 렌더링하는 함수
+         * @param {Array} db - 표시할 데이터베이스 배열
+         */
+        function displayResults(db) {
+            resultsContainer.innerHTML = ''; // 결과창 초기화
+            
+            if (db.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            db.forEach(item => {
+                // getRiskInfo 함수가 risk_database.js에서 로드됨을 가정
+                const riskInfo = getRiskInfo(item.score); 
+                
+                // 위험도에 따라 카드 테두리 색상 클래스 정의
+                let borderColorClass;
+                // 위험 등급 기준: 점수가 높을수록 위험함
+                if (item.score >= 80) {
+                    borderColorClass = 'border-red-600'; // 매우위험
+                } else if (item.score >= 60) {
+                    borderColorClass = 'border-orange-500'; // 위험
+                } else if (item.score >= 40) {
+                    borderColorClass = 'border-yellow-500'; // 주의
+                } else if (item.score >= 20) {
+                    borderColorClass = 'border-green-500'; // 경고
+                } else {
+                    borderColorClass = 'border-blue-600'; // 안전
+                }
+
+
+                const cardHTML = `
+                <div class="risk-card bg-white p-5 rounded-xl shadow-md border-t-4 ${borderColorClass} border-l border-r border-b">
+                    <!-- 카드 헤더: 제목 및 위험도 -->
+                    <div class="flex justify-between items-start mb-3">
+                        <h2 class="text-xl font-bold text-gray-900 truncate pr-2">${item.title}</h2>
+                        <span class="flex-shrink-0 px-3 py-1 text-sm font-semibold rounded-full ${riskInfo.bgClass} text-white">
+                            ${riskInfo.level} (${item.score}점)
+                        </span>
+                    </div>
+                    
+                    <!-- 키워드 -->
+                    <div class="mb-5 h-12 overflow-y-auto">
+                        ${item.keywords.map(k => `<span class="inline-block bg-gray-200 text-gray-700 text-xs font-medium mr-2 mb-2 px-2.5 py-0.5 rounded-full">${k}</span>`).join(' ')}
+                    </div>
+                    
+                    <!-- 버튼 그룹 -->
+                    <div class="flex space-x-3">
+                        <!-- 안전카드 링크 (새 탭에서 열기) -->
+                        <a href="${item.file_card}" target="_blank" class="btn btn-card w-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                            안전카드 보기
+                        </a>
+                        <!-- 체크리스트 링크 (새 탭에서 열기) -->
+                        <a href="${item.file_checklist}" target="_blank" class="btn btn-checklist w-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            체크리스트 보기
+                        </a>
+                    </div>
+                </div>
+                `;
+                resultsContainer.innerHTML += cardHTML;
+            });
+        }
+    </script>
+
+</body>
+</html>
