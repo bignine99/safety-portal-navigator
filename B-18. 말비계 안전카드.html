@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>말비계 위험정보 카드</title>
+    <!-- Inter 폰트 임포트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', sans-serif;
+            margin: 0;
+            padding: 24px;
+            background-color: #f8f9fa; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: #495057; 
+        }
+
+        /* --- 페이지 제목 --- */
+        .main-title {
+            width: 100%;
+            max-width: 550px; 
+            text-align: center;
+            font-size: 1.75em; 
+            font-weight: 700; 
+            color: #212529; 
+            margin-bottom: 24px; 
+            padding-bottom: 24px;
+            border-bottom: 1px solid #dee2e6; 
+            box-sizing: border-box;
+        }
+        /* --- 제목 끝 --- */
+
+        /* --- 게이지 차트 섹션 --- */
+        .gauge-section {
+            width: 100%;
+            max-width: 550px;
+            background-color: #ffffff;
+            border-radius: 10px; 
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9ecef; 
+            margin-bottom: 24px;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+        .gauge-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #343a40;
+            margin-bottom: 24px;
+        }
+        .gauge-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            color: #004a99;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23004a99' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12l3-7 3 7 3-10 3 10 3-7 3 7'/%3E%3C/svg%3E");
+        }
+        
+        .gauge-container {
+            width: 100%;
+            max-width: 350px;
+            height: 175px;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .gauge-graphic {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .gauge-colors {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 175px 175px 0 0;
+            /* 0-20(안전/파랑), 20-40(경고/녹색), 40-60(주의/노랑), 60-80(위험/주황), 80-100(매우위험/빨강) */
+            background: conic-gradient(
+                from -90deg at 50% 100%,
+                #3b82f6 0deg 36deg,     /* 0-20% (안전 - Blue 500) */
+                #22c55e 36deg 72deg,    /* 20-40% (경고 - Green 500) */
+                #eab308 72deg 108deg,   /* 40-60% (주의 - Yellow 500) */
+                #f97316 108deg 144deg,  /* 60-80% (위험 - Orange 500) */
+                #ef4444 144deg 180deg   /* 80-100% (매우위험 - Red 500) */
+            );
+            overflow: hidden;
+        }
+        
+        .gauge-inner-mask {
+            width: 70%; 
+            height: 122.5px;
+            background: #ffffff;
+            position: absolute;
+            bottom: 0;
+            left: 15%;
+            border-radius: 122.5px 122.5px 0 0;
+            z-index: 3;
+        }
+
+        .gauge-pointer {
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent; 
+            border-right: 7px solid transparent;
+            border-bottom: 75px solid #343a40; 
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform-origin: bottom center;
+            /* --- [수정] 72% 위치 (위험) : (180 * 0.72) - 90 = 39.6deg --- */
+            transform: translateX(-50%) rotate(39.6deg); 
+            transition: transform 0.5s ease-out;
+            z-index: 5;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .gauge-pointer-pivot {
+            width: 18px; 
+            height: 18px;
+            background-color: #343a40; 
+            border-radius: 50%;
+            position: absolute;
+            bottom: -9px; 
+            left: 50%;
+            transform: translateX(-50%);
+            border: 4px solid #ffffff; 
+            z-index: 10;
+        }
+
+        .gauge-label {
+            position: absolute;
+            bottom: 25%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.6em; 
+            font-weight: 700;
+            color: #f97316; /* --- [수정] '위험' 등급 주황색 --- */
+            z-index: 4;
+        }
+        /* --- 게이지 차트 스타일 끝 --- */
+
+
+        /* --- 정보 카드 스타일 --- */
+        .info-card {
+            width: 100%;
+            max-width: 550px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e9ecef;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            background-color: #004a99; 
+            padding: 16px 24px;
+            border-bottom: 1px solid #004a99;
+        }
+        .card-icon {
+            width: 22px; 
+            height: 22px;
+            margin-right: 12px;
+            color: #ffffff; 
+        }
+        .card-header h3 {
+            margin: 0;
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #ffffff; 
+        }
+        .card-body {
+            padding: 24px;
+        }
+        .card-body ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        .card-body li {
+            position: relative;
+            display: flex; 
+            align-items: flex-start; 
+            margin-bottom: 14px; 
+            font-size: 0.95rem; 
+            line-height: 1.6;
+        }
+        .card-body li:last-child {
+            margin-bottom: 0;
+        }
+        
+        .li-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            flex-shrink: 0; 
+            margin-top: 3px;
+        }
+        .li-icon.hazard { color: #f97316; } 
+        .li-icon.accident { color: #ef4444; } 
+        .li-icon.measure { color: #3b82f6; } 
+
+        /* --- 체크리스트 버튼 스타일 --- */
+        .checklist-button-container {
+            width: 100%;
+            max-width: 550px;
+            margin-bottom: 24px;
+            box-sizing: border-box; 
+        }
+        .checklist-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px 24px;
+            background-color: #004a99; 
+            color: #ffffff;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            border-radius: 10px; 
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04); 
+            box-sizing: border-box;
+        }
+        .checklist-button:hover {
+            background-color: #003b7a; 
+            box-shadow: 0 8px 20px rgba(0, 74, 153, 0.15); 
+            transform: translateY(-2px); 
+        }
+        .checklist-button svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        /* --- 버튼 스타일 끝 --- */
+
+    </style>
+</head>
+<body>
+
+    <!-- 페이지 제목 -->
+    <h1 class="main-title">위험객체: 말비계</h1>
+
+    <!-- 게이지 차트 섹션 -->
+    <div class="gauge-section">
+        <div class="gauge-header">
+            <div class="gauge-icon"></div>
+            위험 정도
+        </div>
+        <div class="gauge-container">
+            <div class="gauge-graphic">
+                <div class="gauge-colors"></div>
+                <div class="gauge-inner-mask"></div>
+                <div class="gauge-label">위험</div> <!-- [수정] 라벨 -->
+                <div class="gauge-pointer-pivot"></div>
+                <div class="gauge-pointer"></div> <!-- [수정] 바늘 위치 (72점) -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 위험 요인 카드 -->
+    <div class="info-card">
+        <div class="card-header">
+            <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <h3>위험 요인</h3>
+        </div>
+        <div class="card-body">
+            <ul>
+                <li>
+                    <svg class="li-icon hazard" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span>불안정한 지반 또는 경사면에 설치</span>
+                </li>
+                <li>
+                    <svg class="li-icon hazard" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span>작업발판 폭(40cm 이상) 미준수 또는 틈새 발생</span>
+                </li>
+                <li>
+                    <svg class="li-icon hazard" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span>높이 2m 이상임에도 안전난간 미설치</span>
+                </li>
+                <li>
+                    <svg class="li-icon hazard" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span>말비계 위에서 사다리, 발판 등을 놓고 작업</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 주요 사고 형태 카드 -->
+    <div class="info-card">
+        <div class="card-header">
+            <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+            <h3>주요 사고 형태</h3>
+        </div>
+        <div class="card-body">
+            <ul>
+                <li>
+                    <svg class="li-icon accident" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span><strong>추락:</strong> 작업 중 실족하여 비계에서 떨어짐 (최다)</span>
+                </li>
+                <li>
+                    <svg class="li-icon accident" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span><strong>전도:</strong> 작업 중 비계가 넘어져 작업자와 함께 추락</span>
+                </li>
+                <li>
+                    <svg class="li-icon accident" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    <span><strong>붕괴:</strong> 과다한 하중으로 인해 발판 또는 비계가 파손/붕괴</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 안전 조치 사항 카드 -->
+    <div class="info-card">
+        <div class="card-header">
+            <svg class="card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <h3>안전 조치 사항</h3>
+        </div>
+        <div class="card-body">
+            <ul>
+                <li>
+                    <svg class="li-icon measure" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span><strong>견고하고 평탄한 지면</strong>에 설치하고 아웃트리거 확장</span>
+                </li>
+                <li>
+                    <svg class="li-icon measure" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span><strong>작업발판 폭 40cm 이상</strong> 확보 및 틈새 없이 설치</span>
+                </li>
+                <li>
+                    <svg class="li-icon measure" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>높이 2m 이상 시 <strong>안전난간 설치</strong> 또는 안전대 착용</span>
+                </li>
+                <li>
+                    <svg class="li-icon measure" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span>최대적재하중(400kgf) 준수 및 표지판 부착</span>
+                </li>
+                <li>
+                    <svg class="li-icon measure" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                    <span><strong>말비계 위에서 사다리, 발판 등 사용 금지</strong></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 체크리스트 버튼 -->
+    <div class="checklist-button-container">
+        <!-- 링크 기능은 작성하지 말라고 하셨으므로 '#'로 대체합니다 -->
+        <a href="B-18.%20말비계%20체크리스트.html" target="_blank" rel="noopener noreferrer" class="checklist-button">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                <path d="m9 14 2 2 4-4"></path>
+            </svg>
+            체크리스트
+        </a>
+    </div>
+
+</body>
+</html>

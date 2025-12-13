@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>거푸집 및 동바리 해체 안전 점검표</title>
+    <!-- Tailwind CSS CDN 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Inter 폰트 로드 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* 체크박스 및 라디오버튼 커스텀 스타일 */
+        .form-checkbox, .form-radio {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            display: inline-block;
+            vertical-align: middle;
+            background-origin: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            flex-shrink: 0;
+            height: 1.25rem; /* 20px */
+            width: 1.25rem; /* 20px */
+            color: #4f46e5; /* indigo-600 */
+            background-color: #fff;
+            border-color: #6b7280; /* gray-500 */
+            border-width: 1px;
+            border-radius: 0.375rem; /* rounded-md */
+        }
+        .form-radio {
+            border-radius: 9999px; /* rounded-full */
+        }
+        .form-checkbox:checked, .form-radio:checked {
+            border-color: transparent;
+            background-color: currentColor;
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .form-checkbox:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6 9.586l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+        }
+        .form-radio:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+        }
+        /* 테이블 스타일 */
+        th, td {
+            @apply border border-gray-300 px-4 py-3 text-sm;
+        }
+        th {
+            @apply bg-gray-100 font-semibold text-gray-700;
+        }
+        td {
+            @apply bg-white;
+        }
+        .result-cell {
+            @apply w-48;
+        }
+        .action-cell {
+            @apply w-48;
+        }
+        .category-cell {
+            @apply w-40 font-medium;
+        }
+        .number-cell {
+            @apply w-12 text-center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 sm:p-8">
+    <div class="max-w-7xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
+        <header class="bg-indigo-700 text-white p-6">
+            <h1 class="text-3xl font-bold text-center">거푸집 및 동바리 해체 작업 점검표 [Checklist]</h1>
+        </header>
+
+        <!-- 점검 개요 섹션 -->
+        <section class="p-6 border-b border-gray-200">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label for="check-time" class="block text-sm font-medium text-gray-700 mb-2">점검 시기</label>
+                    <select id="check-time" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option>해체 전</option>
+                        <option>해체 중</option>
+                        <option>해체 후</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="inspector" class="block text-sm font-medium text-gray-700 mb-2">점검자</label>
+                    <input type="text" id="inspector" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="성명 입력...">
+                </div>
+                <div>
+                    <label for="check-date" class="block text-sm font-medium text-gray-700 mb-2">점검 일자</label>
+                    <input type="date" id="check-date" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+        </section>
+
+        <!-- 점검표 테이블 -->
+        <section class="p-6 overflow-x-auto">
+            <table class="w-full min-w-max border-collapse">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="w-40">구분</th>
+                        <th class="w-12">번호</th>
+                        <th>점검 내용</th>
+                        <th class="w-48">점검 결과 (양호/불량/N.A)</th>
+                        <th class="w-48">조치 사항</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <!-- 1. 계획 및 준비 -->
+                    <tr>
+                        <td rowspan="6" class="category-cell align-top text-center">계획 및 준비</td>
+                        <td class="number-cell">1</td>
+                        <td>거푸집 및 동바리 해체 작업 계획서(순서, 방법, 강도 기준) 작성 및 숙지</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">2</td>
+                        <td>콘크리트 압축 강도 시험 결과(슈미트해머, 공시체) 기준치 이상 확인</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">3</td>
+                        <td>거푸집 존치 기간(양생 기간) 준수 여부 확인</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">4</td>
+                        <td>해체 작업자 특별 안전교육 이수 및 관리감독자 지정</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">5</td>
+                        <td>작업자 개인보호구(안전모, 안전화, 코팅장갑, 보안경) 착용</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">6</td>
+                        <td>해체 작업 구역 하부 출입 통제(로프, 펜스) 및 감시인 배치</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+
+                    <!-- 2. 해체 작업 -->
+                    <tr>
+                        <td rowspan="8" class="category-cell align-top text-center">해체 작업</td>
+                        <td class="number-cell">7</td>
+                        <td>해체 작업 순서(설치의 역순: 벽체/보 -> 슬래브) 준수</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">8</td>
+                        <td>동바리(서포트) 해체는 상부 슬래브/보를 확인하며 천천히 진행</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">9</td>
+                        <td>동바리 해체 후, 즉시 재설치(존치 동바리) 계획 이행 (필요시)</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">10</td>
+                        <td>거푸집 및 동바리 해체 작업 시, 상하 동시 작업 금지</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">11</td>
+                        <td>해체 작업 중인 거푸집/동바리 하부에 작업자 접근 금지</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">12</td>
+                        <td>해체된 거푸집, 동바리 등 자재를 던지거나 투하 금지</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">13</td>
+                        <td>해체 작업 시, 추락 위험 구역(단부, 개구부) 안전난간 선 확보</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">14</td>
+                        <td>악천후(강풍 10m/s 이상, 폭우, 폭설) 시 작업 중지</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    
+                    <!-- 3. 자재 정리 및 운반 -->
+                    <tr>
+                        <td rowspan="6" class="category-cell align-top text-center">자재 정리 및 운반</td>
+                        <td class="number-cell">15</td>
+                        <td>해체된 자재는 크레인, 호이스트 등 달줄을 이용하여 운반</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">16</td>
+                        <td>인양 로프 2줄 걸이 및 견고한 결속, 신호수 배치</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">17</td>
+                        <td>해체된 목재 거푸집(합판, 각재)의 못, 날카로운 부분 즉시 제거</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">18</td>
+                        <td>해체된 자재를 작업 발판, 통로, 개구부 주변에 적치 금지</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">19</td>
+                        <td>자재는 지정된 야적장에 종류별, 규격별로 정리 (붕괴 방지)</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">20</td>
+                        <td>작업 완료 후, 작업장 주변 정리정돈 (결속선, 핀, 웨지 등)</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 특이사항 -->
+        <section class="p-6">
+            <label for="remarks" class="block text-lg font-semibold text-gray-800 mb-3">특이사항 및 조치결과 요약</label>
+            <textarea id="remarks" rows="5" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="점검 중 발견된 주요 위험 요인 및 완료된 조치 사항을 기재..."></textarea>
+        </section>
+    </div>
+</body>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>굴삭기(포크레인) 안전 점검표</title>
+    <!-- Tailwind CSS CDN 로드 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Inter 폰트 로드 */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* 체크박스 및 라디오버튼 커스텀 스타일 */
+        .form-checkbox, .form-radio {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            display: inline-block;
+            vertical-align: middle;
+            background-origin: border-box;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            flex-shrink: 0;
+            height: 1.25rem; /* 20px */
+            width: 1.25rem; /* 20px */
+            color: #4f46e5; /* indigo-600 */
+            background-color: #fff;
+            border-color: #6b7280; /* gray-500 */
+            border-width: 1px;
+            border-radius: 0.375rem; /* rounded-md */
+        }
+        .form-radio {
+            border-radius: 9999px; /* rounded-full */
+        }
+        .form-checkbox:checked, .form-radio:checked {
+            border-color: transparent;
+            background-color: currentColor;
+            background-size: 100% 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .form-checkbox:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6 9.586l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
+        }
+        .form-radio:checked {
+            background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+        }
+        /* 테이블 스타일 */
+        th, td {
+            @apply border border-gray-300 px-4 py-3 text-sm;
+        }
+        th {
+            @apply bg-gray-100 font-semibold text-gray-700;
+        }
+        td {
+            @apply bg-white;
+        }
+        .result-cell {
+            @apply w-48;
+        }
+        .action-cell {
+            @apply w-48;
+        }
+        .category-cell {
+            @apply w-40 font-medium;
+        }
+        .number-cell {
+            @apply w-12 text-center;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 sm:p-8">
+    <div class="max-w-7xl mx-auto bg-white shadow-lg rounded-xl overflow-hidden">
+        <header class="bg-indigo-700 text-white p-6">
+            <h1 class="text-3xl font-bold text-center">굴삭기(포크레인) 작업 점검표 [Checklist]</h1>
+        </header>
+
+        <!-- 점검 개요 섹션 -->
+        <section class="p-6 border-b border-gray-200">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <label for="check-time" class="block text-sm font-medium text-gray-700 mb-2">점검 시기</label>
+                    <select id="check-time" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option>작업 전</option>
+                        <option>작업 중 (수시)</option>
+                        <option>작업 후</option>
+                        <option>매일</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="inspector" class="block text-sm font-medium text-gray-700 mb-2">점검자</label>
+                    <input type="text" id="inspector" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="성명 입력...">
+                </div>
+                <div>
+                    <label for="check-date" class="block text-sm font-medium text-gray-700 mb-2">점검 일자</label>
+                    <input type="date" id="check-date" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+        </section>
+
+        <!-- 점검표 테이블 -->
+        <section class="p-6 overflow-x-auto">
+            <table class="w-full min-w-max border-collapse">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="w-40">구분</th>
+                        <th class="w-12">번호</th>
+                        <th>점검 내용</th>
+                        <th class="w-48">점검 결과 (양호/불량/N.A)</th>
+                        <th class="w-48">조치 사항</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <!-- 1. 운전자 자격 -->
+                    <tr>
+                        <td rowspan="3" class="category-cell align-top text-center">운전자 자격</td>
+                        <td class="number-cell">1</td>
+                        <td>운전원 면허 자격 여부 (3톤 미만: 교육이수증, 3톤 이상: 건설기계조종사면허)</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">2</td>
+                        <td>신규 채용자 / 특별 안전보건교육 이수 확인</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">3</td>
+                        <td>작업 전 운전자 음주 및 피로 상태 확인</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+
+                    <!-- 2. 안전 장치 -->
+                    <tr>
+                        <td rowspan="4" class="category-cell align-top text-center">안전 장치</td>
+                        <td class="number-cell">4</td>
+                        <td>버킷(어태치먼트) 이탈방지장치(퀵커플러 안전핀) 체결 상태</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">5</td>
+                        <td>후방경보장치 및 후방카메라(또는 감지센서) 정상 작동</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">6</td>
+                        <td>운전석 안전벨트 및 헤드가드(ROPS/FOPS) 상태</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">7</td>
+                        <td>선회 잠금장치(스윙락) 정상 작동 여부</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+
+                    <!-- 3. 장비 상태 (굴착/주행) -->
+                    <tr>
+                        <td rowspan="6" class="category-cell align-top text-center">장비 상태 (굴착/주행)</td>
+                        <td class="number-cell">8</td>
+                        <td>붐(Boom), 암(Arm), 버킷(Bucket)의 균열, 변형, 유압 누유 상태</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">9</td>
+                        <td>트랙(무한궤도) 또는 타이어의 손상, 마모, 공기압 상태</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">10</td>
+                        <td>제동장치, 조작장치, 경보장치(경적) 기능</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">11</td>
+                        <td>전조등, 작업등, 방향지시등 작동 상태</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">12</td>
+                        <td>운전석 시야 확보 (전면 유리, 백미러, 사이드미러 파손/청결)</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">13</td>
+                        <td>인양 작업 시 훅(Hook)의 해지장치 상태 (인양용 버킷)</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+
+                    <!-- 4. 작업 환경 및 계획 -->
+                    <tr>
+                        <td rowspan="4" class="category-cell align-top text-center">작업 환경 및 계획</td>
+                        <td class="number-cell">14</td>
+                        <td>작업계획서(작업방법, 지반상태, 위험요인) 숙지</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">15</td>
+                        <td>작업장소의 지반 상태 (침하, 경사, 굴착면 가장자리 이격)</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">16</td>
+                        <td>작업반경 내 고압선, 구조물, 지중매설물(도시가스 등) 확인</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">17</td>
+                        <td>유도자(신호수) 배치 및 신호 체계 확인</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+
+                    <!-- 5. 작업 중 안전 수칙 -->
+                    <tr>
+                        <td rowspan="7" class="category-cell align-top text-center">작업 중 안전 수칙</td>
+                        <td class="number-cell">18</td>
+                        <td>운전원 안전벨트 착용</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">19</td>
+                        <td>버킷(인양물)에 사람 탑승 절대 금지</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">20</td>
+                        <td>작업 반경(선회 반경) 내 근로자 접근 통제</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">21</td>
+                        <td>버킷을 이용한 주목적 외 사용 금지 (밀기, 끌기, 인양 등)</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">22</td>
+                        <td>인양 작업 시, 2줄 걸이 및 보조로프 사용 (인양 승인 시)</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">23</td>
+                        <td>운전석 이탈 시 버킷을 지면에 내려놓고 시동 정지</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                    <tr>
+                        <td class="number-cell">24</td>
+                        <td>경사면 주행 시 저속 운행, 붐/버킷을 낮추고 주행</td>
+                        <td class="result-cell">
+                            <select class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">선택...</option>
+                                <option value="good">양호</option>
+                                <option value="bad">불량</option>
+                                <option value="na">N.A</option>
+                            </select>
+                        </td>
+                        <td class="action-cell"><input type="text" class="w-full p-2 border border-gray-300 rounded-md"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 특이사항 -->
+        <section class="p-6">
+            <label for="remarks" class="block text-lg font-semibold text-gray-800 mb-3">특이사항 및 조치결과 요약</label>
+            <textarea id="remarks" rows="5" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="점검 중 발견된 주요 위험 요인 및 완료된 조치 사항을 기재..."></textarea>
+        </section>
+    </div>
+</body>
+</html>
