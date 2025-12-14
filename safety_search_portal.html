@@ -253,12 +253,12 @@
                     <!-- 버튼 그룹 -->
                     <div class="flex space-x-3">
                         <!-- 안전카드 링크 (새 탭에서 열기) -->
-                        <a href="${item.file_card}" target="_blank" class="btn btn-card w-full">
+                        <a href="${item.file_card}" class="btn btn-card w-full">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                             안전카드 보기
                         </a>
                         <!-- 체크리스트 링크 (새 탭에서 열기) -->
-                        <a href="${item.file_checklist}" target="_blank" class="btn btn-checklist w-full">
+                        <a href="${item.file_checklist}" class="btn btn-checklist w-full">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             체크리스트 보기
                         </a>
@@ -270,5 +270,30 @@
         }
     </script>
 
+    <script>
+        (function() {
+            // index 페이지에서는 홈 버튼을 띄우지 않음
+            const path = (location.pathname || "").toLowerCase();
+            if (path.endsWith('/') || path.endsWith('/index.html')) return;
+
+            const btn = document.createElement('a');
+            btn.href = './index.html';
+            btn.textContent = '홈으로 가기';
+            Object.assign(btn.style, {
+                position: 'fixed',
+                right: '16px',
+                bottom: '16px',
+                padding: '10px 14px',
+                background: '#2563eb',
+                color: '#fff',
+                borderRadius: '8px',
+                boxShadow: '0 4px 8px rgba(0,0,0,0.15)',
+                textDecoration: 'none',
+                fontWeight: '600',
+                zIndex: '9999'
+            });
+            document.body.appendChild(btn);
+        })();
+    </script>
 </body>
 </html>
