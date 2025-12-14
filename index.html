@@ -58,6 +58,11 @@
         }
     </script>
     <link rel="icon" href="data:,">
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js', { scope: './' }).catch(console.error);
+        }
+    </script>
 
     <style>
         body {
@@ -298,6 +303,12 @@
                 zIndex: '9999'
             });
             document.body.appendChild(btn);
+        })();
+    </script>
+    <script>
+        // 혹시 남아 있는 target="_blank" 제거
+        (function() {
+            document.querySelectorAll('a[target="_blank"]').forEach(el => el.removeAttribute('target'));
         })();
     </script>
 </body>
