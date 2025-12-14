@@ -41,7 +41,7 @@ async function handleHtml(request) {
 function patchHtml(html) {
   let out = html.replace(/target="_blank"/gi, '');
 
-  const homeButtonScript = `<script>(function(){try{const p=(location.pathname||'').toLowerCase();if(p.endsWith('/')||p.endsWith('/index.html'))return;const b=document.createElement('a');b.href='./index.html';b.textContent='홈으로 가기';Object.assign(b.style,{position:'fixed',right:'16px',bottom:'16px',padding:'10px 14px',background:'#2563eb',color:'#fff',borderRadius:'8px',boxShadow:'0 4px 8px rgba(0,0,0,0.15)',textDecoration:'none',fontWeight:'600',zIndex:'9999'});document.body.appendChild(b);}catch(e){console.error(e);}})();</script></body>`;
+  const homeButtonScript = `<script>(function(){try{const p=(location.pathname||'').toLowerCase();if(p.endsWith('/')||p.endsWith('/index.html'))return;const b=document.createElement('a');b.href='./index.html';b.textContent='홈으로 가기';Object.assign(b.style,{position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'24px',padding:'10px 18px',background:'#2563eb',color:'#fff',borderRadius:'10px',boxShadow:'0 6px 12px rgba(0,0,0,0.18)',textDecoration:'none',fontWeight:'700',zIndex:'9999'});document.body.appendChild(b);}catch(e){console.error(e);}})();</script></body>`;
   if (out.match(/<\/body>/i)) {
     out = out.replace(/<\/body>/i, homeButtonScript);
   } else {
