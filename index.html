@@ -110,6 +110,11 @@
             transform: translateY(-1px);
         }
     </style>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(console.error);
+        }
+    </script>
 </head>
 <body class="p-4 sm:p-8">
 
